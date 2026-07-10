@@ -38,15 +38,22 @@ const BottomControlllPLayIng = memo(() => {
    )
 
    // Tự động gọi API lấy link nhạc qua Proxy sạch mỗi khi bài hát thay đổi (currentEncodeId đổi)
+   // Tự động gọi API lấy link nhạc qua Proxy sạch mỗi khi bài hát thay đổi (currentEncodeId đổi)
    useEffect(() => {
       const getStreamLink = async () => {
          if (!currentEncodeId) return
          try {
             const res = await axios.get(`https://api-zingmp3.vercel.app/api/song?id=${currentEncodeId}`)
-            const audioLink = res?.data?.data?.["128"] || res?.data?.data?.["320"]
+            
+            // Cập nhật lại đường dẫn chính xác dựa theo cấu trúc data trả về của API Vercel Proxy công cộng
+            // Thử lấy từ res.data.data.data trước, nếu không được sẽ fallback về res.data.data
+            const targetData = res?.data?.data?.data || res?.data?.data;
+            const audioLink = targetData?.["128"] || targetData?.["320"] || targetData?.["default"];
             
             if (audioLink) {
-               setStreamUrl(audioLink)
+               // Đảm bảo đường link luôn sử dụng giao thức https để tránh bị trình duyệt chặn Mixed Content
+               const secureAudioLink = audioLink.replace(/^http:/i, "https:");
+               setStreamUrl(secureAudioLink)
             } else {
                setStreamUrl("")
                toast("Bài hát VIP hoặc không tìm thấy link stream!", { type: "warning" })
