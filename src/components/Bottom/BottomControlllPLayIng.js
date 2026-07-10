@@ -8,6 +8,7 @@ import { pushSongsLogged } from "../../features/Logged/loggedFeatures"
 import { useCallback } from "react"
 import { useLayoutEffect } from "react"
 import { toast } from "react-toastify"
+import axios from "axios" // Đã tích hợp axios để gọi API lấy link nhạc
 
 const BottomControlllPLayIng = memo(() => {
    const progressBar = useRef()
@@ -15,6 +16,7 @@ const BottomControlllPLayIng = memo(() => {
    const progresArea = useRef()
    const dispatch = useDispatch()
    const [oke, setOke] = useState(false)
+   const [streamUrl, setStreamUrl] = useState("") // State lưu link mp3 thực tế sau khi bypass qua proxy
 
    const currentEncodeId = useSelector((state) => state.queueNowPlay.currentEncodeId)
    const infoSongCurrent = useSelector((state) => state.queueNowPlay.infoSongCurrent)
@@ -34,6 +36,28 @@ const BottomControlllPLayIng = memo(() => {
       },
       [progresArea, infoSongCurrent, progressBar]
    )
+
+   // Tự động gọi API lấy link nhạc qua Proxy sạch mỗi khi bài hát thay đổi (currentEncodeId đổi)
+   useEffect(() => {
+      const getStreamLink = async () => {
+         if (!currentEncodeId) return
+         try {
+            const res = await axios.get(`https://api-zingmp3.vercel.app/api/song?id=${currentEncodeId}`)
+            const audioLink = res?.data?.data?.["128"] || res?.data?.data?.["320"]
+            
+            if (audioLink) {
+               setStreamUrl(audioLink)
+            } else {
+               setStreamUrl("")
+               toast("Bài hát VIP hoặc không tìm thấy link stream!", { type: "warning" })
+            }
+         } catch (error) {
+            console.log("Lỗi lấy link nhạc qua proxy:", error)
+            setStreamUrl("")
+         }
+      }
+      getStreamLink()
+   }, [currentEncodeId])
 
    useEffect(() => {
       const setOff = () => {
@@ -95,7 +119,7 @@ const BottomControlllPLayIng = memo(() => {
                loop={isLoop}
                volume={volume}
                muted={muted}
-               url={currentEncodeId ? `http://api.mp3.zing.vn/api/streaming/audio/${currentEncodeId}/320` : ""}
+               url={streamUrl} // Sử dụng link nhạc proxy sạch đã lấy được ở trên thay vì link Zing trực tiếp bị 404
             ></ReactPlayer>
          </div>
          <p className="playing_time-right">{fancyTimeFormat(infoSongCurrent?.duration)}</p>
