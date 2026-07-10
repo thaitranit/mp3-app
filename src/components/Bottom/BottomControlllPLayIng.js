@@ -37,28 +37,31 @@ const BottomControlllPLayIng = memo(() => {
       [progresArea, infoSongCurrent, progressBar]
    )
 
-   // Tự động gọi API lấy link nhạc qua Proxy mới ổn định
+   // Tự động gọi API lấy link nhạc qua Backend riêng của bạn trên Railway
    useEffect(() => {
       const getStreamLink = async () => {
          if (!currentEncodeId) return
          try {
-            // Thay đổi hẳn sang cụm Proxy dự phòng có thuật toán giải mã Zing mới nhất
-            const res = await axios.get(`https://zing-mp3-api.vercel.app/api/song?id=${currentEncodeId}`)
+            // Gọi chính xác vào server backend riêng bạn vừa tạo
+            const res = await axios.get(`https://zingmp3-api-full-production.up.railway.app/api/song?id=${currentEncodeId}`)
             
-            // Cập nhật tầng dữ liệu trả về theo cấu trúc mới
+            // Log cấu trúc data ra console để bạn dễ dàng debug khi cần
+            console.log("Dữ liệu từ Backend của tôi:", res.data);
+
+            // Bóc tách dữ liệu theo cấu trúc chuẩn của repo zingmp3-api
             const targetData = res?.data?.data;
             const audioLink = targetData?.["128"] || targetData?.["320"] || res?.data?.url;
             
             if (audioLink) {
-               // Đảm bảo link luôn chạy HTTPS để không bị lỗi Mixed Content
+               // Ép link về https để tránh trình duyệt chặn lỗi Mixed Content khi deploy
                const secureAudioLink = audioLink.replace(/^http:/i, "https:");
                setStreamUrl(secureAudioLink)
             } else {
                setStreamUrl("")
-               toast("Bài hát bản quyền/VIP hoặc lỗi link stream!", { type: "warning" })
+               toast("Bài hát VIP hoặc lỗi link stream từ Backend!", { type: "warning" })
             }
          } catch (error) {
-            console.log("Lỗi lấy link nhạc qua proxy:", error)
+            console.log("Lỗi kết nối đến Backend Railway:", error)
             setStreamUrl("")
          }
       }
