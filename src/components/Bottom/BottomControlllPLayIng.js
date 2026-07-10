@@ -8,7 +8,6 @@ import { pushSongsLogged } from "../../features/Logged/loggedFeatures"
 import { useCallback } from "react"
 import { useLayoutEffect } from "react"
 import { toast } from "react-toastify"
-import axios from "axios" // Đã tích hợp axios để gọi API lấy link nhạc
 
 const BottomControlllPLayIng = memo(() => {
    const progressBar = useRef()
@@ -16,7 +15,6 @@ const BottomControlllPLayIng = memo(() => {
    const progresArea = useRef()
    const dispatch = useDispatch()
    const [oke, setOke] = useState(false)
-   const [streamUrl, setStreamUrl] = useState("") // State lưu link mp3 thực tế sau khi bypass qua proxy
 
    const currentEncodeId = useSelector((state) => state.queueNowPlay.currentEncodeId)
    const infoSongCurrent = useSelector((state) => state.queueNowPlay.infoSongCurrent)
@@ -36,37 +34,6 @@ const BottomControlllPLayIng = memo(() => {
       },
       [progresArea, infoSongCurrent, progressBar]
    )
-
-   // Tự động gọi API lấy link nhạc qua Backend riêng của bạn trên Railway
-   useEffect(() => {
-      const getStreamLink = async () => {
-         if (!currentEncodeId) return
-         try {
-            // Gọi chính xác vào server backend riêng bạn vừa tạo
-            const res = await axios.get(`https://zingmp3-api-full-production.up.railway.app/api/song?id=${currentEncodeId}`)
-            
-            // Log cấu trúc data ra console để bạn dễ dàng debug khi cần
-            console.log("Dữ liệu từ Backend của tôi:", res.data);
-
-            // Bóc tách dữ liệu theo cấu trúc chuẩn của repo zingmp3-api
-            const targetData = res?.data?.data;
-            const audioLink = targetData?.["128"] || targetData?.["320"] || res?.data?.url;
-            
-            if (audioLink) {
-               // Ép link về https để tránh trình duyệt chặn lỗi Mixed Content khi deploy
-               const secureAudioLink = audioLink.replace(/^http:/i, "https:");
-               setStreamUrl(secureAudioLink)
-            } else {
-               setStreamUrl("")
-               toast("Bài hát VIP hoặc lỗi link stream từ Backend!", { type: "warning" })
-            }
-         } catch (error) {
-            console.log("Lỗi kết nối đến Backend Railway:", error)
-            setStreamUrl("")
-         }
-      }
-      getStreamLink()
-   }, [currentEncodeId])
 
    useEffect(() => {
       const setOff = () => {
@@ -120,7 +87,7 @@ const BottomControlllPLayIng = memo(() => {
                   }
                }}
                onError={() => {
-                  return toast("Có lỗi xảy ra, vui lòng thử lại", {
+                  return toast("Có lỗi xảy ra, vui lòng thử lại hoặc khởi động lại Backend", {
                      type: "error",
                   })
                }}
@@ -128,7 +95,8 @@ const BottomControlllPLayIng = memo(() => {
                loop={isLoop}
                volume={volume}
                muted={muted}
-               url={streamUrl} // Sử dụng link nhạc proxy sạch đã lấy được ở trên thay vì link Zing trực tiếp bị 404
+               /* Gọi trực tiếp đường dẫn luồng Stream nhị phân từ Backend riêng để đạt độ ổn định 100% */
+               url={currentEncodeId ? `https://zingmp3-api-full-production.up.railway.app/api/stream?id=${currentEncodeId}` : ""}
             ></ReactPlayer>
          </div>
          <p className="playing_time-right">{fancyTimeFormat(infoSongCurrent?.duration)}</p>
