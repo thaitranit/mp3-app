@@ -13,13 +13,13 @@ const EventHomePage = memo(() => {
    const [datas, setData] = useState(null)
    const { data, status } = useGetHomePage()
 
-   const dataSelector = data?.data.items.find((e) => e.title === "Sự kiện")
+   const dataSelector = data?.data?.items?.find((e) => e.title === "Sự kiện")
 
    useEffect(() => {
-      if (data) {
-         setData(dataSelector.items)
-      }
-   }, [status])
+   if (data && dataSelector?.items) {
+      setData(dataSelector.items)
+   }
+}, [status, data])
 
    const navigationPrevRef = React.useRef(null)
    const navigationNextRef = React.useRef(null)

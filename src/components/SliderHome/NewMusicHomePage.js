@@ -24,13 +24,14 @@ const NewMusicHomePage = memo(() => {
    const currentEncodeId = useSelector((state) => state.queueNowPlay.currentEncodeId)
    const { playing, isReady } = useSelector((state) => state.setting)
 
-   const dataSelector = data?.data.items.find((e) => e.title === "Nhạc mới")
+   const dataSelector = data?.data?.items?.find((e) => e.title === "Nhạc mới")
 
    useEffect(() => {
-      if (data) {
-         setData(dataSelector.items)
-      }
-   }, [status])
+   // Kiểm tra chắc chắn dataSelector và dataSelector.items tồn tại mới set vào state
+   if (data && dataSelector?.items) {
+      setData(dataSelector.items)
+   }
+}, [status, data])
 
    const navigationPrevRef = React.useRef(null)
    const navigationNextRef = React.useRef(null)
