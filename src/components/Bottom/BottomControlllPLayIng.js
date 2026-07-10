@@ -37,26 +37,25 @@ const BottomControlllPLayIng = memo(() => {
       [progresArea, infoSongCurrent, progressBar]
    )
 
-   // Tự động gọi API lấy link nhạc qua Proxy sạch mỗi khi bài hát thay đổi (currentEncodeId đổi)
-   // Tự động gọi API lấy link nhạc qua Proxy sạch mỗi khi bài hát thay đổi (currentEncodeId đổi)
+   // Tự động gọi API lấy link nhạc qua Proxy mới ổn định
    useEffect(() => {
       const getStreamLink = async () => {
          if (!currentEncodeId) return
          try {
-            const res = await axios.get(`https://api-zingmp3.vercel.app/api/song?id=${currentEncodeId}`)
+            // Thay đổi hẳn sang cụm Proxy dự phòng có thuật toán giải mã Zing mới nhất
+            const res = await axios.get(`https://zing-mp3-api.vercel.app/api/song?id=${currentEncodeId}`)
             
-            // Cập nhật lại đường dẫn chính xác dựa theo cấu trúc data trả về của API Vercel Proxy công cộng
-            // Thử lấy từ res.data.data.data trước, nếu không được sẽ fallback về res.data.data
-            const targetData = res?.data?.data?.data || res?.data?.data;
-            const audioLink = targetData?.["128"] || targetData?.["320"] || targetData?.["default"];
+            // Cập nhật tầng dữ liệu trả về theo cấu trúc mới
+            const targetData = res?.data?.data;
+            const audioLink = targetData?.["128"] || targetData?.["320"] || res?.data?.url;
             
             if (audioLink) {
-               // Đảm bảo đường link luôn sử dụng giao thức https để tránh bị trình duyệt chặn Mixed Content
+               // Đảm bảo link luôn chạy HTTPS để không bị lỗi Mixed Content
                const secureAudioLink = audioLink.replace(/^http:/i, "https:");
                setStreamUrl(secureAudioLink)
             } else {
                setStreamUrl("")
-               toast("Bài hát VIP hoặc không tìm thấy link stream!", { type: "warning" })
+               toast("Bài hát bản quyền/VIP hoặc lỗi link stream!", { type: "warning" })
             }
          } catch (error) {
             console.log("Lỗi lấy link nhạc qua proxy:", error)
