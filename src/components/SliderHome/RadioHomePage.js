@@ -7,15 +7,13 @@ const RadioHomePage = memo(({ isNotAll }) => {
    const [datas, setData] = useState(null)
    const { data, status } = useGetHomePage()
 
-   const dataSelector = data?.data.items.find((e) => e.title === "Radio Nổi bật")
+   const dataSelector = data?.data?.items?.find((e) => e.title === "Radio") // Hoặc title tương ứng của file đó
 
    useEffect(() => {
-      if (data) {
-         setData(dataSelector.items)
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [status])
-
+   if (data && dataSelector?.items) {
+      setData(dataSelector.items)
+   }
+}, [status, data])
    return (
       <PlayListSelector to="radio" classAdd={`container_radio`} title={dataSelector?.title} all={!isNotAll}>
          {datas &&
