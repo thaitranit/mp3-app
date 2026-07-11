@@ -96,7 +96,7 @@ const BottomControlllPLayIng = memo(() => {
                volume={volume}
                muted={muted}
                /* Gọi trực tiếp đường dẫn luồng Stream nhị phân từ Backend riêng để đạt độ ổn định 100% */
-               url={currentEncodeId ? `https://source-page.zingmp3.vn/api/streaming/audio/${currentEncodeId}/128` : ""}
+               url={currentEncodeId ? `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3` : ""}
             ></ReactPlayer>
          </div>
          <p className="playing_time-right">{fancyTimeFormat(infoSongCurrent?.duration)}</p>
