@@ -52,6 +52,9 @@ export const tmdAPI = {
    //  bắt đầu search :
    getSearchAllKeyApi: (keyword) => `${tmdbEndpoint}/searchall?keyword=${keyword}`,
 
+   // Thêm hàm này vào cuối cùng của object tmdAPI, ngay dưới hàm getSearchAllKeyApi hoặc getLyrics:
+   getSong: (id) => `${tmdbEndpoint}/song?id=${id}`,
+
    // Lyrics :
    getLyrics: (id) => `${tmdbEndpoint}/songlyrics/${id}`,
 }
