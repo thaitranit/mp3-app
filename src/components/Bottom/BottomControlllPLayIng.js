@@ -96,7 +96,7 @@ const BottomControlllPLayIng = memo(() => {
                volume={volume}
                muted={muted}
                /* Gọi trực tiếp đường dẫn luồng Stream nhị phân từ Backend riêng để đạt độ ổn định 100% */
-               url={currentEncodeId ? `https://zing-mp3-api-five.vercel.app/api/stream?id=${currentEncodeId}` : ""}
+               url={currentEncodeId ? `https://api.mp3.zing.vn/api/streaming/audio/${currentEncodeId}/128` : ""}
             ></ReactPlayer>
          </div>
          <p className="playing_time-right">{fancyTimeFormat(infoSongCurrent?.duration)}</p>
