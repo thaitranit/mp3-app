@@ -32,7 +32,17 @@ async function getCookie(forceRefresh = false) {
     return cachedCookie;
   }
   try {
-    const res = await axios.get(URL, { timeout: 5000 });
+    const res = await axios.get(URL, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        Accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Language": "vi,en;q=0.9",
+        Referer: "https://zingmp3.vn/",
+      },
+      timeout: 6000,
+    });
     const cookies = res.headers["set-cookie"];
     if (cookies && cookies.length > 0) {
       cachedCookie = cookies.map((c) => c.split(";")[0]).join("; ");
@@ -54,7 +64,9 @@ async function getStreamUrl(songId) {
   let res = await axios.get(`${URL}${reqPath}`, {
     headers: {
       Cookie: cookie,
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      Referer: "https://zingmp3.vn/",
     },
     params: {
       id: songId,
@@ -71,7 +83,9 @@ async function getStreamUrl(songId) {
     res = await axios.get(`${URL}${reqPath}`, {
       headers: {
         Cookie: cookie,
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        Referer: "https://zingmp3.vn/",
       },
       params: {
         id: songId,
@@ -89,8 +103,8 @@ async function getStreamUrl(songId) {
 
 // 1. Audio stream endpoint
 app.get(["/api/stream/:id", "/api/stream"], async (req, res) => {
+  let id = req.query.id || req.params.id;
   try {
-    let id = req.query.id || req.params.id;
     if (id && id.endsWith(".mp3")) {
       id = id.slice(0, -4);
     }
@@ -98,8 +112,11 @@ app.get(["/api/stream/:id", "/api/stream"], async (req, res) => {
       return res.status(400).json({ error: "Missing song id" });
     }
 
+    console.log(`[STREAM] Fetching stream for: ${id}`);
     const songData = await getStreamUrl(String(id));
     const streamUrl = songData?.data?.["128"];
+
+    console.log(`[STREAM] Result for ${id}: err=${songData?.err}, hasStream=${!!streamUrl}`);
 
     if (!streamUrl || streamUrl === "VIP") {
       return res.status(403).json({
@@ -108,9 +125,10 @@ app.get(["/api/stream/:id", "/api/stream"], async (req, res) => {
       });
     }
 
+    res.setHeader("Access-Control-Allow-Origin", "*");
     return res.redirect(streamUrl);
   } catch (err) {
-    console.error("Audio streaming error:", err?.response?.data || err.message);
+    console.error(`[STREAM ERROR] ${id}:`, err?.response?.data || err.message);
     return res.status(500).json({ error: err.message });
   }
 });

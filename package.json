@@ -53,7 +53,8 @@
       "yup": "^0.32.11"
    },
    "scripts": {
-      "start": "react-scripts start",
+      "start": "node server.js",
+      "dev": "react-scripts start",
       "serve": "node server.js",
       "mobile": "cd mobile && npx expo start",
       "build": "react-scripts build",
