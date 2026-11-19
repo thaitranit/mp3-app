@@ -6,18 +6,22 @@ import { v4 as uuidv4 } from "uuid"
 
 const NewMusicEveryDayHomePage = () => {
    const [datas, setData] = useState(null)
-   const { data, status } = useGetHomePage()
+   const { data, status, isLoading } = useGetHomePage()
 
-   const dataSelector = data?.data.items.find((e) => e.title === "Top 100")
+   const dataSelector = data?.data?.items?.find((e) => e.title === "Top 100" || e.sectionId === "h100")
 
    useEffect(() => {
-      if (data) {
+      if (data && dataSelector?.items) {
          setData(dataSelector.items)
       }
-   }, [status])
+   }, [status, data, dataSelector])
+
+   if (!isLoading && (!dataSelector || !dataSelector?.items?.length)) {
+      return null
+   }
 
    return (
-      <PlayListSelector to="/top100" title={dataSelector?.title} all={true}>
+      <PlayListSelector to="/top100" title={dataSelector?.title || "Top 100"} all={true}>
          {datas?.length > 0 &&
             datas.map((e, index) => {
                if (index > 4) return
@@ -37,7 +41,7 @@ const NewMusicEveryDayHomePage = () => {
                   ></CarouselItem>
                )
             })}
-         {!datas &&
+         {(!datas || isLoading) &&
             Array(5)
                .fill(0)
                .map((e, index) => {
