@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: felix-mp3
+    runtime: node
+    plan: free
+    buildCommand: npm install --legacy-peer-deps && npm run build
+    startCommand: node server.js
+    envVars:
+      - key: NODE_VERSION
+        value: 18.20.0
