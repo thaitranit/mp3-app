@@ -11,6 +11,7 @@ const VERSION = "1.6.34";
 const URL = "https://zingmp3.vn";
 const SECRET_KEY = "2aa2d1c561e809b267f3638c4a307aab";
 const API_KEY = "88265e23d4284f25963e6eedac8fbfa3";
+const VIETNAM_IP = "113.161.72.15"; // Viettel VN IP để vượt rào cản bản quyền lãnh thổ trên Cloud
 
 function getHash256(str) {
   return crypto.createHash("sha256").update(str).digest("hex");
@@ -40,6 +41,9 @@ async function getCookie(forceRefresh = false) {
           "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
         "Accept-Language": "vi,en;q=0.9",
         Referer: "https://zingmp3.vn/",
+        "X-Forwarded-For": VIETNAM_IP,
+        "X-Real-IP": VIETNAM_IP,
+        "Client-IP": VIETNAM_IP,
       },
       timeout: 6000,
     });
@@ -61,13 +65,18 @@ async function getStreamUrl(songId) {
   const reqPath = "/api/v2/song/get/streaming";
   const sig = hashParam(reqPath, songId, ctime);
 
+  const requestHeaders = {
+    Cookie: cookie,
+    "User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    Referer: "https://zingmp3.vn/",
+    "X-Forwarded-For": VIETNAM_IP,
+    "X-Real-IP": VIETNAM_IP,
+    "Client-IP": VIETNAM_IP,
+  };
+
   let res = await axios.get(`${URL}${reqPath}`, {
-    headers: {
-      Cookie: cookie,
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-      Referer: "https://zingmp3.vn/",
-    },
+    headers: requestHeaders,
     params: {
       id: songId,
       ctime: ctime,
@@ -78,15 +87,11 @@ async function getStreamUrl(songId) {
     timeout: 8000,
   });
 
-  if (res.data?.err === -201) {
+  if (res.data?.err === -201 || !res.data?.data?.["128"]) {
     cookie = await getCookie(true);
+    requestHeaders.Cookie = cookie;
     res = await axios.get(`${URL}${reqPath}`, {
-      headers: {
-        Cookie: cookie,
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        Referer: "https://zingmp3.vn/",
-      },
+      headers: requestHeaders,
       params: {
         id: songId,
         ctime: ctime,
