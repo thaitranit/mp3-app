@@ -1,4 +1,4 @@
-# Xin Chào, Tôi là Tiến Đạt 👋
+# Xin Chào, Tôi là Felix 👋
 
 ## Chào Mừng tới dự án web nghe nhạc của tôi 👏
 
@@ -120,4 +120,4 @@
 
 ## Cảm ơn đã đọc. rất mong nhận được sự góp ý của bạn
 
-### Liên hệ với tôi: **huynhtiiendat99@gmail.com**
+### Liên hệ với tôi: **Felix**

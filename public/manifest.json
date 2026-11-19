@@ -1,0 +1,16 @@
+{
+  "short_name": "Felix MP3",
+  "name": "Felix MP3 - Nghe nhạc chất lượng cao",
+  "icons": [
+    {
+      "src": "/pabicon.webp",
+      "type": "image/webp",
+      "sizes": "192x192 512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#170f23",
+  "theme_color": "#170f23",
+  "display": "standalone",
+  "orientation": "portrait"
+}

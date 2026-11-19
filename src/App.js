@@ -103,25 +103,25 @@ function App() {
    // set localStorage
    useMemo(() => {
       const queueNowPlay = JSON.parse(localStorage.getItem("queue_nowplay"))
-      const logged = JSON.parse(localStorage.getItem("d4tmp3_logged"))
-      const setting = JSON.parse(localStorage.getItem("d4tmp3_setting"))
-      const lyrics = JSON.parse(localStorage.getItem("d4tmp3_lyrics"))
-      const time = JSON.parse(localStorage.getItem("d4tmp3_timeCurrent"))
+      const logged = JSON.parse(localStorage.getItem("felixmp3_logged")) || JSON.parse(localStorage.getItem("d4tmp3_logged"))
+      const setting = JSON.parse(localStorage.getItem("felixmp3_setting")) || JSON.parse(localStorage.getItem("d4tmp3_setting"))
+      const lyrics = JSON.parse(localStorage.getItem("felixmp3_lyrics")) || JSON.parse(localStorage.getItem("d4tmp3_lyrics"))
+      const time = JSON.parse(localStorage.getItem("felixmp3_timeCurrent")) || JSON.parse(localStorage.getItem("d4tmp3_timeCurrent"))
 
       if (!queueNowPlay) {
          localStorage.setItem("queue_nowplay", JSON.stringify(queueNowPlaySelector))
       }
       if (!logged) {
-         localStorage.setItem("d4tmp3_logged", JSON.stringify(loggedSelector))
+         localStorage.setItem("felixmp3_logged", JSON.stringify(loggedSelector))
       }
       if (!setting) {
-         localStorage.setItem("d4tmp3_setting", JSON.stringify(settingSelector))
+         localStorage.setItem("felixmp3_setting", JSON.stringify(settingSelector))
       }
       if (!lyrics) {
-         localStorage.setItem("d4tmp3_lyrics", JSON.stringify(lyricsSelector))
+         localStorage.setItem("felixmp3_lyrics", JSON.stringify(lyricsSelector))
       }
       if (!time) {
-         localStorage.setItem("d4tmp3_timeCurrent", JSON.stringify(timeSelector))
+         localStorage.setItem("felixmp3_timeCurrent", JSON.stringify(timeSelector))
       }
    }, [])
 

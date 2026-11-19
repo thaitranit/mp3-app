@@ -45,6 +45,41 @@ const BottomControlllPLayIng = memo(() => {
       }
    }, [])
 
+   // Tích hợp điều khiển màn hình khóa và Dynamic Island trên iOS
+   useEffect(() => {
+      if ("mediaSession" in navigator && infoSongCurrent) {
+         try {
+            navigator.mediaSession.metadata = new window.MediaMetadata({
+               title: infoSongCurrent.title || "Felix MP3",
+               artist: infoSongCurrent.artistsNames || "Nhiều nghệ sĩ",
+               album: "Felix MP3",
+               artwork: [
+                  {
+                     src: infoSongCurrent.thumbnailM || infoSongCurrent.thumbnail || "/pabicon.webp",
+                     sizes: "512x512",
+                     type: "image/jpeg",
+                  },
+               ],
+            })
+
+            navigator.mediaSession.setActionHandler("play", () => {
+               dispatch(setPlay(true))
+            })
+            navigator.mediaSession.setActionHandler("pause", () => {
+               dispatch(setPlay(false))
+            })
+            navigator.mediaSession.setActionHandler("previoustrack", () => {
+               document.querySelector("#prevMusic")?.click()
+            })
+            navigator.mediaSession.setActionHandler("nexttrack", () => {
+               document.querySelector("#nextMusic")?.click()
+            })
+         } catch (e) {
+            console.error("MediaSession error:", e)
+         }
+      }
+   }, [infoSongCurrent, dispatch])
+
    useLayoutEffect(() => {
       progressBar.current.style.width = (currentTime / infoSongCurrent?.duration) * 100 + "%"
    }, [currentTime])
@@ -86,8 +121,9 @@ const BottomControlllPLayIng = memo(() => {
                      }
                   }
                }}
-               onError={() => {
-                  return toast("Có lỗi xảy ra, vui lòng thử lại hoặc khởi động lại Backend", {
+               onError={(e) => {
+                  console.error("ReactPlayer playback error:", e)
+                  return toast("Không thể phát bài hát này (có thể là bài hát VIP hoặc bản quyền)", {
                      type: "error",
                   })
                }}
@@ -95,8 +131,8 @@ const BottomControlllPLayIng = memo(() => {
                loop={isLoop}
                volume={volume}
                muted={muted}
-               /* Gọi trực tiếp đường dẫn luồng Stream nhị phân từ Backend riêng để đạt độ ổn định 100% */
-               url={currentEncodeId ? `https://zingmp3api-production.up.railway.app/api/stream?id=${currentEncodeId}` : ""}
+               /* Gọi luồng audio stream trực tiếp qua proxy local có đuôi định dạng .mp3 cho ReactPlayer */
+               url={currentEncodeId ? `/api/stream/${currentEncodeId}.mp3` : ""}
             ></ReactPlayer>
          </div>
          <p className="playing_time-right">{fancyTimeFormat(infoSongCurrent?.duration)}</p>

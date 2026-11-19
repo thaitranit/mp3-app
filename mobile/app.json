@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Felix MP3",
+    "slug": "felix-mp3",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": false,
+    "splash": {
+      "backgroundColor": "#170f23",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.felix.mp3",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "audio"
+        ],
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
+      }
+    },
+    "plugins": [
+      "expo-status-bar"
+    ]
+  }
+}

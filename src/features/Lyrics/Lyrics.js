@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import axios from "axios"
 import { tmdAPI } from "../../config"
 
-let initialState = JSON.parse(localStorage.getItem("d4tmp3_lyrics")) || {
+let initialState = JSON.parse(localStorage.getItem("felixmp3_lyrics")) || JSON.parse(localStorage.getItem("d4tmp3_lyrics")) || {
    defaultIBGUrls: [],
    lyricByLine: [],
    lyricKara: [],
@@ -23,7 +23,7 @@ export const lyrics = createSlice({
    reducers: {
       setIsSeek: (state, action) => {
          state.isSeek = action.payload
-         localStorage.setItem("d4tmp3_lyrics", JSON.stringify(state))
+         localStorage.setItem("felixmp3_lyrics", JSON.stringify(state))
       },
    },
    extraReducers: (builer) => {
@@ -42,7 +42,7 @@ export const lyrics = createSlice({
             state.lyricByLine = false
          }
          state.isLoading = false
-         localStorage.setItem("d4tmp3_lyrics", JSON.stringify(state))
+         localStorage.setItem("felixmp3_lyrics", JSON.stringify(state))
       })
    },
 })

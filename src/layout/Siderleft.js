@@ -23,10 +23,10 @@ const Siderleft = () => {
          <div className="sider">
             <Link to={"/"} id="logo-sider" className="sider_brand-item">
                <div className="sider_brand-item-img">
-                  <img src="/pabicon.webp" alt="logo-dat-mp3" />
+                  <img src="/pabicon.webp" alt="logo-felix-mp3" />
                </div>
                <p className="sider_brand-item-text">
-                  D4T <span>MP3</span>
+                  FELIX <span>MP3</span>
                </p>
             </Link>
          </div>

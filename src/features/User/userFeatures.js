@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
 
-let initialState = JSON.parse(localStorage.getItem("d4tmp3_user")) || {
+let initialState = JSON.parse(localStorage.getItem("felixmp3_user")) || JSON.parse(localStorage.getItem("d4tmp3_user")) || {
    activeUser: false,
    name: "",
    email: "",
@@ -18,16 +18,16 @@ export const users = createSlice({
          state.email = action.payload.email
          state.id = action.payload.uid
          state.activeUser = true
-         localStorage.setItem("d4tmp3_user", JSON.stringify(state))
+         localStorage.setItem("felixmp3_user", JSON.stringify(state))
       },
       updateUser: (state, action) => {
          state.name = action.payload.displayName
-         localStorage.setItem("d4tmp3_user", JSON.stringify(state))
+         localStorage.setItem("felixmp3_user", JSON.stringify(state))
       },
 
       setImgUrl: (state, action) => {
          state.imgUrl = action.payload.photoURL
-         localStorage.setItem("d4tmp3_user", JSON.stringify(state))
+         localStorage.setItem("felixmp3_user", JSON.stringify(state))
       },
 
       logOut: (state, action) => {
@@ -36,7 +36,7 @@ export const users = createSlice({
          state.email = ""
          state.id = ""
          state.activeUser = false
-         localStorage.setItem("d4tmp3_user", JSON.stringify(state))
+         localStorage.setItem("felixmp3_user", JSON.stringify(state))
       },
    },
 })
